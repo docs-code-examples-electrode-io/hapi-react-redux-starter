@@ -1,10 +1,9 @@
-import path from 'path';
-import config from '../../webpack.config.dev';
-import open from 'open';
-
+import Open from 'open';
+import Path from 'path';
 import Hapi from 'hapi';
-import hapiWebpackDevMiddlewarePlugin from './hapiWebpackDevMiddlewarePlugin';
-import hapiWebpackHotMiddlewarePlugin from './hapiWebpackHotMiddlewarePlugin';
+import HapiWebpackDevMiddlewarePlugin from './hapiWebpackDevMiddlewarePlugin';
+import HapiWebpackHotMiddlewarePlugin from './hapiWebpackHotMiddlewarePlugin';
+import Config from '../../webpack.config.dev';
 
 /* eslint-disable no-console */
 
@@ -17,17 +16,17 @@ server.connection({
 
 server.register([
   {
-    register: hapiWebpackDevMiddlewarePlugin,
+    register: HapiWebpackDevMiddlewarePlugin,
     options: {
-      config: config,
+      config: Config,
       options: {
         noInfo: true,
-        publicPath: config.output.publicPath
+        publicPath: Config.output.publicPath
       }
     }
   },
   {
-    register: hapiWebpackHotMiddlewarePlugin
+    register: HapiWebpackHotMiddlewarePlugin
   }
 ]);
 
@@ -40,12 +39,12 @@ server.register(require('inert'), (err) => {
     method: 'GET',
     path: '/{path*}',
     handler: function (request, response) {
-      response.file(path.join( __dirname, '../../source/index.html'));
+      response.file(Path.join( __dirname, '../../source/index.html'));
     }
   });
 });
 
 server.start(function() {
-  console.log('server running at: ' + server.info.uri);
-  open(`http://localhost:${port}`);
+  console.log('.love> server running @ ' + server.info.uri);
+  Open(`http://localhost:${port}`);
 });
