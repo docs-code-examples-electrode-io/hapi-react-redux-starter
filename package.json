@@ -1,6 +1,6 @@
 {
   "name": "hapi-react-redux-starter",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "hapi react redux starter",
   "main": "index.js",
   "scripts": {
