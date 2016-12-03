@@ -45,6 +45,6 @@ server.register(require('inert'), (err) => {
 });
 
 server.start(function() {
-  console.log('.love> server running @ ' + server.info.uri);
+  console.log('.love> server running @ ' + port);
   Open(`http://localhost:${port}`);
 });
