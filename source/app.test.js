@@ -7,4 +7,10 @@ describe('App', () => {
 
     expect(app).toNotBe(undefined);
   });
+
+  it('shall have a start method', () => {
+    let app = new App();
+
+    expect(app.start()).toEqual(true);
+  });
 });
