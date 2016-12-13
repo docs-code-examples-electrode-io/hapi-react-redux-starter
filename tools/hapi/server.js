@@ -1,5 +1,4 @@
 import Open from 'open';
-import Path from 'path';
 import Hapi from 'hapi';
 import HapiWebpackDevMiddlewarePlugin from './hapiWebpackDevMiddlewarePlugin';
 import HapiWebpackHotMiddlewarePlugin from './hapiWebpackHotMiddlewarePlugin';
@@ -9,8 +8,9 @@ import { renderToString } from 'react-dom/server';
 import { createStore } from 'redux';
 import React from 'react';
 import { Provider } from 'react-redux';
+import { match, RouterContext, Router } from 'react-router';
+import routes from '../../source/routes';
 import configureStore from '../../source/store/configureStore';
-import App from '../../source/components/App';
 
 const server = new Hapi.Server();
 const port = 3000;
@@ -43,19 +43,33 @@ server.register(require('inert'), (err) => {
   server.route({
     method: 'GET',
     path: '/{path*}',
-    handler: handleRender
+    handler: handleRoutes
   });
 });
 
-function handleRender(req, res) {
+function handleRoutes(request, response) {
+  match({ routes, location: request.url }, (error, redirectLocation, renderProps) => {
+    if (error) {
+      request(error.message).code(500);
+    } else if (redirectLocation) {
+      response.redirect(302, redirectLocation.pathname + redirectLocation.search);
+    } else if (renderProps) {
+      handleRender(response, renderProps);
+    } else {
+      response('Not found').code(404);
+    }
+  });
+}
+
+function handleRender(response, renderProps) {
   const store = configureStore();
   const html = renderToString(
-    <Provider store={store}>
-      <App />
+    <Provider store={store} >
+      <RouterContext {...renderProps} />
     </Provider>
   );
   const preloadedState = store.getState();
-  res(renderFullPage(html, preloadedState));
+  response(renderFullPage(html, preloadedState)).code(200);
 }
 
 function renderFullPage(html, preloadedState) {
